@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Bump together with Identity Version in src/ClickToSlideshow.Package/Package.appxmanifest
+         (same number plus a trailing .0) — the About box reads this, Add-AppxPackage reads that. -->
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+</Project>

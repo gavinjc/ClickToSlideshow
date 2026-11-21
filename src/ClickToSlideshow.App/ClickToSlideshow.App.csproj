@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>ClickToSlideshow.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <!-- Explicit false (not just omitted) — the WindowsAppSDK build logic silently defaults
+         this back to true whenever it's unset, re-enabling the self-contained loose-deployment
+         bootstrap that crashes (0xc000027b in Microsoft.UI.Xaml.dll) once packaged via MSIX,
+         since packaged apps get WinRT activation from their own package identity instead.
+         Framework-dependent mode requires the Microsoft.WindowsAppSDK.Runtime package below,
+         and the Windows App Runtime installed system-wide. Ported from ClickToPDF.App. -->
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Covers the .exe's own Explorer icon (and the unpackaged dev-loop's taskbar icon).
+         Does NOT cover the running window's titlebar/taskbar icon while packaged — that
+         needs an explicit AppWindow.SetIcon() call at runtime, see MainWindow.xaml.cs. -->
+    <ApplicationIcon>Assets\ClickToSlideshow.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="2.3.1" />
+    <!-- Direct reference for M3's PlayerWindow (CanvasAnimatedControl) — Core's own reference
+         only flows transitively, which the XAML markup compiler doesn't scan for XAML-usable
+         types, matching Core.csproj's own pinned version (see that file's comment). -->
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClickToSlideshow.Core\ClickToSlideshow.Core.csproj" />
+    <!-- Shared About dialog, theme and rating prompt; a git submodule (clone recursively, see CLAUDE.md). -->
+    <ProjectReference Include="..\..\external\Bureau.Common\src\Bureau.Common\Bureau.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Not auto-included by the SDK's default item globs despite EnableDefaultItems being on
+         (a known .NET SDK / WinAppSDK gap) — without this, .resw files build but never get
+         indexed into the app's .pri, so every x:Uid/ResourceLoader lookup silently misses. -->
+    <PRIResource Include="Strings\**\*.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Copied to the output/publish directory so AppWindow.SetIcon() can load it by a
+         relative path at runtime — ApplicationIcon above only embeds it as the .exe's own
+         Win32 resource, it doesn't put a loadable file next to the binary. -->
+    <Content Include="Assets\ClickToSlideshow.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

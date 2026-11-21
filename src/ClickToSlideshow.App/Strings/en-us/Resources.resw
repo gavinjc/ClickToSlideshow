@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Toolbar -->
+  <data name="ZoomLabel.Text" xml:space="preserve"><value>Zoom</value></data>
+  <data name="OpenButton.Content" xml:space="preserve"><value>Open&#8230;</value></data>
+  <data name="OpenButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Open a saved project</value></data>
+  <data name="OpenButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Open project</value></data>
+  <data name="UndoButton.Content" xml:space="preserve"><value>Undo</value></data>
+  <data name="UndoButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Undo the last change</value></data>
+  <data name="UndoButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Undo</value></data>
+  <data name="SortButton.Content" xml:space="preserve"><value>Sort</value></data>
+  <data name="SortButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Sort again by the last order chosen. The arrow has more choices.</value></data>
+  <data name="SortButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Sort</value></data>
+  <data name="SortByNameItem.Text" xml:space="preserve"><value>Name (natural)</value></data>
+  <data name="SortByDateTakenItem.Text" xml:space="preserve"><value>Date taken</value></data>
+  <data name="SortByDateModifiedItem.Text" xml:space="preserve"><value>Date modified</value></data>
+  <data name="ReverseOrderItem.Text" xml:space="preserve"><value>Reverse current</value></data>
+
+  <!-- Options panel -->
+  <data name="OptionsHeaderText.Text" xml:space="preserve"><value>Options</value></data>
+  <data name="DefaultDurationLabel.Text" xml:space="preserve"><value>Default slide duration (ms)</value></data>
+  <data name="TransitionDurationLabel.Text" xml:space="preserve"><value>Transition duration (ms)</value></data>
+  <data name="TransitionKindLabel.Text" xml:space="preserve"><value>Transition</value></data>
+  <data name="TransitionCrossfadeItem.Content" xml:space="preserve"><value>Crossfade</value></data>
+  <data name="TransitionCutItem.Content" xml:space="preserve"><value>Cut</value></data>
+  <data name="TransitionFadeThroughBlackItem.Content" xml:space="preserve"><value>Fade through black</value></data>
+  <data name="TransitionPushLeftItem.Content" xml:space="preserve"><value>Push left</value></data>
+  <data name="TransitionPushRightItem.Content" xml:space="preserve"><value>Push right</value></data>
+  <data name="TransitionPushUpItem.Content" xml:space="preserve"><value>Push up</value></data>
+  <data name="TransitionPushDownItem.Content" xml:space="preserve"><value>Push down</value></data>
+  <data name="ResolutionLabel.Text" xml:space="preserve"><value>Resolution</value></data>
+  <data name="Resolution1080pItem.Content" xml:space="preserve"><value>1080p</value></data>
+  <data name="Resolution2160pItem.Content" xml:space="preserve"><value>2160p (4K)</value></data>
+  <data name="ResolutionOriginalItem.Content" xml:space="preserve"><value>Original</value></data>
+  <data name="FitModeLabel.Text" xml:space="preserve"><value>Fit</value></data>
+  <data name="FitModeFitItem.Content" xml:space="preserve"><value>Fit (letterbox)</value></data>
+  <data name="FitModeFillItem.Content" xml:space="preserve"><value>Fill (crop)</value></data>
+  <data name="BackgroundColorLabel.Text" xml:space="preserve"><value>Background colour</value></data>
+  <data name="BackgroundColorSwatchBlack.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Black</value></data>
+  <data name="BackgroundColorSwatchBlack.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Black</value></data>
+  <data name="BackgroundColorSwatchWhite.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>White</value></data>
+  <data name="BackgroundColorSwatchWhite.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>White</value></data>
+  <data name="BackgroundColorSwatchGray.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Gray</value></data>
+  <data name="BackgroundColorSwatchGray.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Gray</value></data>
+  <data name="BackgroundColorSwatchRed.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Red</value></data>
+  <data name="BackgroundColorSwatchRed.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Red</value></data>
+  <data name="BackgroundColorSwatchOrange.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Orange</value></data>
+  <data name="BackgroundColorSwatchOrange.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Orange</value></data>
+  <data name="BackgroundColorSwatchYellow.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Yellow</value></data>
+  <data name="BackgroundColorSwatchYellow.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Yellow</value></data>
+  <data name="BackgroundColorSwatchGreen.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Green</value></data>
+  <data name="BackgroundColorSwatchGreen.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Green</value></data>
+  <data name="BackgroundColorSwatchTeal.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Teal</value></data>
+  <data name="BackgroundColorSwatchTeal.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Teal</value></data>
+  <data name="BackgroundColorSwatchBlue.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Blue</value></data>
+  <data name="BackgroundColorSwatchBlue.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Blue</value></data>
+  <data name="BackgroundColorSwatchPurple.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Purple</value></data>
+  <data name="BackgroundColorSwatchPurple.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Purple</value></data>
+  <data name="MoreColorsButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Custom colour&#8230;</value></data>
+  <data name="MoreColorsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Custom colour</value></data>
+
+  <data name="PlayButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Play</value></data>
+  <data name="PlayButtonText.Text" xml:space="preserve"><value>Play</value></data>
+
+  <!-- Save (M4) -->
+  <data name="SaveButton.Content" xml:space="preserve"><value>Save</value></data>
+  <data name="SaveButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Save as a video (MP4). The arrow has more choices.</value></data>
+  <data name="SaveButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Save</value></data>
+  <data name="SaveVideoItem.Text" xml:space="preserve"><value>Video (MP4)&#8230;</value></data>
+  <data name="SavePptxItem.Text" xml:space="preserve"><value>PowerPoint (PPTX)&#8230;</value></data>
+  <data name="SaveProjectItem.Text" xml:space="preserve"><value>Project (JSON)&#8230;</value></data>
+  <data name="CancelSaveButton.Content" xml:space="preserve"><value>Cancel</value></data>
+  <data name="SaveProgressFramesFormat" xml:space="preserve"><value>Rendering slides&#8230; {0}%</value></data>
+  <data name="SaveProgressAudioFormat" xml:space="preserve"><value>Adding music&#8230; {0}%</value></data>
+  <data name="CurrentBackgroundColorPreview.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Current background colour</value></data>
+  <data name="SavedFormat" xml:space="preserve">
+    <value>Saved {0}</value>
+    <comment>{0} = the saved file's name, e.g. "Saved Slideshow_2026-11-02.mp4"</comment>
+  </data>
+  <data name="SavedOpenAction" xml:space="preserve"><value>Open</value></data>
+  <data name="SavedShowInFolderAction" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="AboutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>About ClickTo: Slideshow</value></data>
+  <data name="AboutButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>About ClickTo: Slideshow</value></data>
+
+  <!-- Help topics, listed in HelpTopicKeys.InOrder. Each needs a Title and a Body; a topic with
+       either missing is left out of the Help window. Blank lines in a body separate paragraphs;
+       "keys | action" lines make a shortcut table (Bureau.Common app-conventions.md → Help). -->
+  <data name="HelpGettingStartedTitle" xml:space="preserve"><value>Getting started from File Explorer</value></data>
+  <data name="HelpGettingStartedBody" xml:space="preserve"><value>1. In File Explorer, select the photos you want in the show.
+2. If you want music, select one or more audio files too, in the same selection.
+3. Right-click the selection and choose Create slideshow.
+
+A window opens showing every photo as a thumbnail, with any music in the audio strip below. From there you can drag the photos into order, set how long each one stays on screen, press Play to watch it fullscreen, or save it.
+
+You can also right-click a folder and choose Create slideshow. That adds the photos and music directly inside the folder, but not those in folders within it.
+
+Once the window is open, you can drag more photos, music or folders onto it from File Explorer. They are added at the end, the same way.
+
+Your files stay where they are. ClickTo: Slideshow only reads them; it never moves, changes or deletes them.</value></data>
+  <data name="HelpSupportedFilesTitle" xml:space="preserve"><value>Supported photo and music files</value></data>
+  <data name="HelpSupportedFilesBody" xml:space="preserve"><value>Photos: JPEG, PNG, BMP, TIFF, JPEG XR, WebP, AVIF, HEIC and HEIF, and camera RAW files such as CR2, CR3, NEF, ARW, DNG, ORF, RAF and RW2.
+
+Music: MP3, WAV, FLAC, M4A, AAC, WMA, OGG and Opus.
+
+Some photo types open only once Windows has an extension for them from the Microsoft Store. Many PCs already have them, and most are free:
+HEIC and HEIF: "HEIF Image Extensions", plus an HEVC decoder ("HEVC Video Extensions", or the free "HEVC Video Extensions from Device Manufacturer" if your PC came with it).
+WebP: "Webp Image Extensions".
+AVIF: "AV1 Video Extension".
+Camera RAW: "Raw Image Extension".
+
+GIF isn't supported. A GIF can be animated, and a slide could show only its first frame, so ClickTo: Slideshow leaves GIFs out rather than quietly losing the animation. To use one, save it as a PNG or JPEG first.</value></data>
+  <data name="HelpSkippedFilesTitle" xml:space="preserve"><value>Photos that can't load, and skipped files</value></data>
+  <data name="HelpSkippedFilesBody" xml:space="preserve"><value>When a photo can't be opened, its slide stays in the grid and shows "Can't load". Click it to see why.
+
+If Windows is missing the extension for that kind of photo (HEIC, WebP or camera RAW), the message names what to install and has an Open Microsoft Store button. For AVIF, install "AV1 Video Extension" from the Store. After installing, remove the slide and add the photo again, with the + beside SLIDES or by dragging it onto the window.
+
+Remove any slide that can't load before you play or save the show.
+
+Some files are skipped instead of added, and a message at the bottom of the window lists them. That happens when you choose Create slideshow on, or drag onto the window, a selection or folder holding files ClickTo: Slideshow can't use, such as GIFs, documents or videos. A folder with no photos or music directly inside it is skipped by its own name; folders inside it are left alone. It also happens when a music file can't be read, when a reopened project's music can't be found, and when a dragged photo can't be read.
+
+The same photo or music file can be added more than once, for example to open and close the show with the same picture, so nothing is skipped for being there already.
+
+Close a message with its ×. Skipped files are simply left out; nothing happens to them.</value></data>
+  <data name="HelpArrangingSlidesTitle" xml:space="preserve"><value>Arranging slides</value></data>
+  <data name="HelpArrangingSlidesBody" xml:space="preserve"><value>Drag a slide to move it. To work on several slides at once, select them with Ctrl+click or Shift+click.
+
+Sort puts every slide in order by name (with numbers in counting order, so 2 comes before 10), by date taken, or by date modified. Photos with no date taken use their date modified. Reverse current flips the order you have now. Click Sort itself to sort again by the order you chose last (by name until you choose one), or click the arrow beside it for all the choices. The sort you chose last is used the next time you open photos.
+
+Hover over a slide to show its buttons: preview, rotate right, set duration, set transition, and remove from show. Double-click a slide to see it larger.
+
+Photos the camera marked as taken sideways are turned the right way up for you.
+
+To add more photos, use the + beside SLIDES, or drag them, or a folder of them, onto the window from File Explorer. They go at the end.
+
+Remove takes a slide out of the show only. The photo itself stays where it is.
+
+Undo takes back moves (dragged or by keys), sorts, rotations, a slide's own duration or transition, and photos or music added, removed or dragged into a new order, up to the last 20. It doesn't undo changes in Options, which apply to the whole show.
+
+The Zoom slider changes the size of the thumbnails. The keys for all of this are in Keyboard shortcuts.</value></data>
+  <data name="HelpDurationsTitle" xml:space="preserve"><value>How long each slide shows</value></data>
+  <data name="HelpDurationsBody" xml:space="preserve"><value>Every slide shows for the default time, set in Options as Default slide duration (ms). It starts at 4000 ms, which is 4 seconds.
+
+To give one slide its own time, hover over it, click the stopwatch button (Set duration) and enter a number of milliseconds: 1000 is one second. The slide then shows its time in a badge, such as 6s. Enter 0 to go back to the default.
+
+Transitions are added between slides, not taken out of them, so each slide is fully on screen for its whole time. The total length of the show is in the runtime bar at the bottom of the window.
+
+With Fit slides to audio chosen, the times are stretched or shrunk to match the music when you play or save, but the times you set are kept.</value></data>
+  <data name="HelpTransitionsTitle" xml:space="preserve"><value>Transitions and fades</value></data>
+  <data name="HelpTransitionsBody" xml:space="preserve"><value>A transition is how one slide changes to the next. Choose it in Options: Crossfade (the default), Cut, Fade through black, or Push left, right, up or down. Transition duration (ms) sets how long each change takes; it starts at 1000 ms.
+
+To give one slide a different transition, hover over it, click the transition button (Set transition into this slide) and choose one. It sets the change into that slide, and the slide shows a small symbol for it. Choose Use project default to undo it.
+
+Every change of slide takes the transition duration, even a Cut: the old slide simply stays on screen for that long. For plain cuts with no extra time, set the duration to 0.
+
+The music fades out over the last 2 seconds of the show, when you play it and in a saved video or PowerPoint. A PowerPoint also fades in on its first slide. The picture itself doesn't fade in or out at the start and end of a played show or a video.</value></data>
+  <data name="HelpMusicTitle" xml:space="preserve"><value>Music in the audio strip</value></data>
+  <data name="HelpMusicBody" xml:space="preserve"><value>Music you selected along with the photos appears in the AUDIO strip below the slides. To add more, use the + beside AUDIO, or drag music files onto the window from File Explorer. New tracks go at the end.
+
+The tracks play one after another, in the order shown, from the first slide. Drag a track to change the order. Remove a track with its ×; Undo brings it back.
+
+Each track has a play button so you can listen to it in the editor. Click or drag along its waveform to jump to a point. Pressing Play for the show stops this.
+
+If the music and the slides are different lengths, the runtime bar decides what happens. See The runtime bar: Loop, Trim, Fit slides.</value></data>
+  <data name="HelpRuntimeBarTitle" xml:space="preserve"><value>The runtime bar: Loop, Trim, Fit slides</value></data>
+  <data name="HelpRuntimeBarBody" xml:space="preserve"><value>The bar at the bottom of the window compares the show with its music. Slideshow is the length of all the slides and transitions; Audio is all the tracks added together. The longer one fills the bar, so you can see which is short, and the line underneath says what will happen.
+
+Under If lengths differ, choose:
+
+Loop audio (the default): music that is shorter than the show starts again from the first track until the show ends. Music that is longer stops when the show ends.
+
+Trim audio: the music plays once. If it is shorter, the rest of the show is silent. If it is longer, it stops when the show ends.
+
+Fit slides to audio: every slide's time is stretched or shrunk by the same amount, so the show ends with the music. Transitions keep their length, and the times you set are kept for next time.
+
+Whichever you choose, the music fades out over the last 2 seconds.</value></data>
+  <data name="HelpOptionsTitle" xml:space="preserve"><value>Options</value></data>
+  <data name="HelpOptionsBody" xml:space="preserve"><value>Click Options above the slides to open or close them.
+
+Default slide duration, Transition and Transition duration: see How long each slide shows, and Transitions and fades.
+
+Resolution: the picture size of a saved video, and the slide size of a saved PowerPoint. 1080p (1920 × 1080) is the default. 2160p (4K) is sharper, but the file is larger and takes longer to save. Original uses the size of your largest photo, made smaller if it's too big for a video (no side over 4096).
+
+Fit: Fit (letterbox) shows the whole photo, with bands of the background colour where its shape differs from the screen. Fill (crop) fills the screen and cuts off the edges that don't fit.
+
+Background colour: the colour of those bands. Pick a swatch, or the … button (Custom colour) for any colour. The large circle shows the colour in use. Black is the default.
+
+Options are saved in a project file and in a PowerPoint, and come back when you reopen it. A new slideshow starts with the defaults.</value></data>
+  <data name="HelpPlayingTitle" xml:space="preserve"><value>Playing fullscreen</value></data>
+  <data name="HelpPlayingBody" xml:space="preserve"><value>Press Play to watch the show fullscreen, with its music.
+
+With more than one monitor, the show plays on a monitor other than your main one, so the editor stays where it is.
+
+Move the mouse to show the controls: previous slide, play or pause, next slide, and volume. They hide again after 3 seconds. The line above them shows how far through the show you are; it can't be clicked to jump, so use ← and → to move a slide at a time.
+
+At the end, the show stops on the last slide and the controls appear. Esc closes it and takes you back to the editor, and F switches between fullscreen and a window. All the player's keys are in Keyboard shortcuts. F1 doesn't open Help while a show plays, so it can't interrupt it.
+
+Changes you make in the editor while a show plays appear the next time you press Play.</value></data>
+  <data name="HelpSavingTitle" xml:space="preserve"><value>Saving as a video, PowerPoint or project</value></data>
+  <data name="HelpSavingBody" xml:space="preserve"><value>Click Save to save a video, or click the arrow beside it for all three choices. Each asks where to save, and suggests a name with today's date, such as Slideshow_2026-10-31.
+
+Video (MP4): a video that plays almost anywhere, with the transitions and music built in. A bar shows how far it has got, first "Rendering slides" then "Adding music", with a Cancel button. Cancelling leaves no half-made file behind.
+
+PowerPoint (PPTX): a presentation with one slide per photo that moves on by itself, with the same transitions and the music as one soundtrack. Each slide's notes give the photo's file name and date taken. The photos and music are copied into the file, so it plays on another PC. The same bar shows how far it has got, "Adding music" first if the show has any, then "Rendering slides", with a Cancel button that also leaves no half-made file.
+
+While a video or PowerPoint is saving, the show can't be changed: adding, removing, moving and sorting slides and music, Undo, the options, Open and Save are all turned off, and so is Play. Everything comes back when the save finishes, fails or you cancel it. You can still scroll and zoom the slides.
+
+Project (JSON): a small file that remembers your slides, their order and times, transitions, music and options, so you can carry on later. It holds no photos or music, only where they are. See Reopening a project.
+
+When it's done, a Saved message appears at the bottom of the window with buttons to open the file or show it in its folder.
+
+Saving never changes your photos or music.</value></data>
+  <data name="HelpReopeningTitle" xml:space="preserve"><value>Reopening a project</value></data>
+  <data name="HelpReopeningBody" xml:space="preserve"><value>Click Open… and choose a project (.json) or a PowerPoint (.pptx) saved by ClickTo: Slideshow. The slides, music and options come back as you left them. Other PowerPoints can't be opened.
+
+If the editor already has slides or music, you're asked first, because opening replaces them and can't be undone.
+
+A project file remembers where the photos and music are. If you move it, move them with it and keep the same folders, and it still finds them.
+
+A PowerPoint remembers only file names, so it finds the photos and music only when they are in the same folder as the .pptx. The PowerPoint itself still plays anywhere, because it has its own copies.
+
+A photo that can't be found shows "Can't load" on its slide. Music that can't be found is left out and listed in a message at the bottom of the window. Put the files back and open the project again, or remove what's missing before you save.</value></data>
+  <data name="HelpPrivacyTitle" xml:space="preserve"><value>Privacy</value></data>
+  <data name="HelpPrivacyBody" xml:space="preserve"><value>ClickTo: Slideshow works entirely on your PC. It never goes online, needs no account, and sends nothing anywhere, not even usage statistics. It works the same with no internet connection. The Open Microsoft Store button and the request to rate the app hand you over to the Microsoft Store app; ClickTo: Slideshow itself makes no connection.
+
+It only reads your photos and music. It never moves, renames, changes or deletes them. Rotating or removing a slide changes the show, not the photo.
+
+It writes only the files you save, its own settings (thumbnail size and last sort order), temporary files while it works (such as playable copies of OGG and Opus music), and a log for fixing problems that stays on your PC (About, then Diagnostics).
+
+Before you share a PowerPoint, remember its slide notes hold each photo's file name and date taken. A project file holds where your photos and music are kept, which can show folder names.</value></data>
+  <data name="HelpKeyboardShortcutsTitle" xml:space="preserve"><value>Keyboard shortcuts</value></data>
+  <data name="HelpKeyboardShortcutsBody" xml:space="preserve"><value>In the editor
+F1 | Open Help
+Ctrl+Z | Undo
+
+With a slide selected in the grid
+Ctrl+A | Select all slides
+Ctrl+← / Ctrl+→ | Move the selected slides earlier or later
+R | Rotate clockwise
+Shift+R | Rotate anticlockwise
+Delete | Remove the selected slides
+
+In the slide preview (double-click a slide to open it)
+← / → | Previous or next slide
+Esc | Close the preview
+
+While playing fullscreen
+Space | Pause or resume
+← / → | Previous or next slide
+F | Leave or return to full screen
+Esc | Stop and return to the editor
+
+In this Help window
+Esc | Close Help</value></data>
+
+  <!-- Empty state -->
+  <data name="EmptyStateText.Text" xml:space="preserve"><value>Drop photos, music or a folder here to get started</value></data>
+  <data name="ChooseFilesButton.Content" xml:space="preserve"><value>Choose files&#8230;</value></data>
+  <data name="ChooseFilesButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Choose files</value></data>
+  <data name="ChooseFolderButton.Content" xml:space="preserve"><value>Choose folder&#8230;</value></data>
+  <data name="ChooseFolderButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Choose folder</value></data>
+
+  <!-- Slide tile -->
+  <data name="LoadingText.Text" xml:space="preserve"><value>Loading&#8230;</value></data>
+  <data name="CantLoadText.Text" xml:space="preserve"><value>Can't load</value></data>
+  <data name="PreviewSlideButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Preview slide</value></data>
+  <data name="PreviewSlideButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Preview slide</value></data>
+  <data name="TileRotateButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Rotate right</value></data>
+  <data name="TileRotateButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Rotate right</value></data>
+  <data name="TileRemoveButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Remove from show</value></data>
+  <data name="TileRemoveButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove from show</value></data>
+  <data name="TileSetDurationButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Set duration</value></data>
+  <data name="TileSetDurationButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Set duration</value></data>
+  <data name="DurationNumberBox.Header" xml:space="preserve"><value>Duration (ms), 0 = default</value></data>
+  <data name="TileSetTransitionButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Set transition into this slide</value></data>
+  <data name="TileSetTransitionButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Set transition into this slide</value></data>
+  <data name="TileTransitionDefaultItem.Text" xml:space="preserve"><value>Use project default</value></data>
+  <data name="TileTransitionCrossfadeItem.Text" xml:space="preserve"><value>Crossfade</value></data>
+  <data name="TileTransitionCutItem.Text" xml:space="preserve"><value>Cut</value></data>
+  <data name="TileTransitionFadeThroughBlackItem.Text" xml:space="preserve"><value>Fade through black</value></data>
+  <data name="TileTransitionPushLeftItem.Text" xml:space="preserve"><value>Push left</value></data>
+  <data name="TileTransitionPushRightItem.Text" xml:space="preserve"><value>Push right</value></data>
+  <data name="TileTransitionPushUpItem.Text" xml:space="preserve"><value>Push up</value></data>
+  <data name="TileTransitionPushDownItem.Text" xml:space="preserve"><value>Push down</value></data>
+
+  <!-- Slides / audio section headers -->
+  <data name="SlidesHeaderLabel.Text" xml:space="preserve"><value>SLIDES</value></data>
+  <data name="AudioHeaderLabel.Text" xml:space="preserve"><value>AUDIO</value></data>
+  <data name="AddSlidesButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Add photos</value></data>
+  <data name="AddSlidesButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Add photos</value></data>
+
+  <!-- Audio strip -->
+  <data name="EmptyAudioStateText.Text" xml:space="preserve"><value>No audio track yet</value></data>
+  <data name="AddAudioButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Add audio track</value></data>
+  <data name="AddAudioButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Add audio track</value></data>
+  <data name="RemoveAudioTrackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Remove track</value></data>
+  <data name="RemoveAudioTrackButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Remove track</value></data>
+
+  <!-- Runtime bar -->
+  <data name="RuntimeBarLabel.Text" xml:space="preserve"><value>Slideshow</value></data>
+  <data name="AudioBarLabel.Text" xml:space="preserve"><value>Audio</value></data>
+  <data name="AudioMatchLabel.Text" xml:space="preserve"><value>If lengths differ</value></data>
+  <data name="AudioMatchLoopItem.Content" xml:space="preserve"><value>Loop audio</value></data>
+  <data name="AudioMatchTrimItem.Content" xml:space="preserve"><value>Trim audio</value></data>
+  <data name="AudioMatchFitSlidesItem.Content" xml:space="preserve"><value>Fit slides to audio</value></data>
+
+  <!-- Drag and drop from File Explorer -->
+  <data name="DropCaption" xml:space="preserve"><value>Add to slideshow</value></data>
+
+  <!-- Preview overlay -->
+  <data name="PreviewCloseButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Close preview</value></data>
+  <data name="PreviewCloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Close preview</value></data>
+  <data name="PreviewRotateButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Rotate right</value></data>
+  <data name="PreviewRotateButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Rotate right</value></data>
+  <data name="PreviewIndicatorFormat" xml:space="preserve">
+    <value>{0} of {1}</value>
+    <comment>{0} = current slide number, {1} = total slide count, e.g. "3 of 12"</comment>
+  </data>
+
+  <!-- Player window chrome (M3) -->
+  <data name="PlayerPreviousButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Previous slide</value></data>
+  <data name="PlayerPreviousButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Previous slide</value></data>
+  <data name="PlayerPlayPauseButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Play or pause</value></data>
+  <data name="PlayerPlayPauseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Play or pause</value></data>
+  <data name="PlayerNextButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Next slide</value></data>
+  <data name="PlayerNextButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Next slide</value></data>
+  <data name="PlayerVolumeSlider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve"><value>Volume</value></data>
+
+  <!-- About dialog. The dialog itself and its strings (title, diagnostics, cross-promotion)
+       come from Bureau.Common; this app supplies only its own description. -->
+  <data name="AppDescriptionText" xml:space="preserve"><value>Turn a folder of photos into a slideshow from File Explorer.</value></data>
+
+  <!-- Discard-changes confirmation (Open replaces the current project) -->
+  <data name="DiscardChangesDialog.Title" xml:space="preserve"><value>Discard current slideshow?</value></data>
+  <data name="DiscardChangesDialog.Content" xml:space="preserve"><value>Opening another project replaces the slides and audio you have now. This can't be undone.</value></data>
+  <data name="DiscardChangesDialog.PrimaryButtonText" xml:space="preserve"><value>Open anyway</value></data>
+  <data name="DiscardChangesDialog.CloseButtonText" xml:space="preserve"><value>Cancel</value></data>
+
+  <!-- Window title (code-behind); also the product name passed to the shared About dialog -->
+  <data name="WindowTitle" xml:space="preserve"><value>ClickTo: Slideshow</value></data>
+
+  <!-- Converters -->
+  <data name="SlideCountSingular" xml:space="preserve"><value>1 slide</value></data>
+  <data name="SlideCountPluralFormat" xml:space="preserve">
+    <value>{0} slides</value>
+    <comment>{0} = slide count, always 0 or 2+ (the "1 slide" case uses SlideCountSingular instead)</comment>
+  </data>
+
+  <!-- ViewModel-composed messages. Skipped lists come in pairs, "One" for a single file and
+       "Many" for more (SkippedFilesText), never "(s)" (Bureau.Common app-conventions.md →
+       Message bar). -->
+  <data name="SkippedFilesOne" xml:space="preserve">
+    <value>Skipped {0}</value>
+    <comment>{0} = the file name, e.g. "Skipped notes.txt": a file that isn't a supported photo or music type</comment>
+  </data>
+  <data name="SkippedFilesMany" xml:space="preserve">
+    <value>{0} files skipped: {1}</value>
+    <comment>{0} = count (2 or more), {1} = comma-separated file names</comment>
+  </data>
+  <data name="UnreadableFilesOne" xml:space="preserve">
+    <value>Skipped {0}: it can't be read</value>
+    <comment>{0} = the file name — a dropped photo or music file that has no path on disk</comment>
+  </data>
+  <data name="UnreadableFilesMany" xml:space="preserve">
+    <value>{0} files skipped because they can't be read: {1}</value>
+    <comment>{0} = count (2 or more), {1} = comma-separated file names</comment>
+  </data>
+  <data name="MissingAudioOne" xml:space="preserve">
+    <value>Skipped {0}: it can't be found</value>
+    <comment>{0} = the file name — a reopened project's music file that moved or was deleted</comment>
+  </data>
+  <data name="MissingAudioMany" xml:space="preserve">
+    <value>{0} music files skipped because they can't be found: {1}</value>
+    <comment>{0} = count (2 or more), {1} = comma-separated file names</comment>
+  </data>
+  <data name="UnreadableAudioOne" xml:space="preserve">
+    <value>Skipped {0}: it can't be read</value>
+    <comment>{0} = the file name — an .ogg/.opus file that is corrupt or not really Ogg audio</comment>
+  </data>
+  <data name="UnreadableAudioMany" xml:space="preserve">
+    <value>{0} music files skipped because they can't be read: {1}</value>
+    <comment>{0} = count (2 or more), {1} = comma-separated file names</comment>
+  </data>
+  <data name="SourceFileMissingMessage" xml:space="preserve"><value>This file could not be found — it may have moved or been deleted.</value></data>
+  <!-- The codec messages end with the same fix the Help topic "Photos that can't load, and
+       skipped files" gives; keep the two in step. -->
+  <data name="HeifCodecMissingMessage" xml:space="preserve"><value>This HEIC photo needs two components from the Microsoft Store to open: "HEIF Image Extensions" and a separate HEVC decoder ("HEVC Video Extensions", or the free "HEVC Video Extensions from Device Manufacturer" if your PC's maker preinstalled it). Install both, then remove this slide and add the photo again.</value></data>
+  <data name="RawCodecMissingMessage" xml:space="preserve"><value>This camera RAW photo needs the free "Raw Image Extension" app from the Microsoft Store to open. Install it, then remove this slide and add the photo again.</value></data>
+  <data name="WebpCodecMissingMessage" xml:space="preserve"><value>This WEBP photo needs the "Webp Image Extensions" app from the Microsoft Store to open. Install it, then remove this slide and add the photo again.</value></data>
+  <data name="CodecMissingLinkButton.Content" xml:space="preserve"><value>Open Microsoft Store</value></data>
+  <data name="SaveVideoFileTypeLabel" xml:space="preserve"><value>MP4 Video</value></data>
+  <data name="SavePptxFileTypeLabel" xml:space="preserve"><value>PowerPoint Presentation</value></data>
+  <data name="SaveProjectFileTypeLabel" xml:space="preserve"><value>ClickTo: Slideshow Project</value></data>
+
+  <!-- Unhandled-exception fallback (App.xaml.cs) -->
+  <data name="UnexpectedErrorMessage" xml:space="preserve"><value>Something unexpected happened. Details were saved to a local log — see About &gt; Diagnostics.</value></data>
+</root>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img">
+  <title>ClickTo: Slideshow</title>
+  <desc>A fanned stack of three landscape frames on a rounded teal tile, the front frame carrying an amber foot band with a white play triangle knocked out of it.</desc>
+  <rect x="0" y="0" width="96" height="96" rx="22" fill="#0F6E63"/>
+  <rect x="22" y="28" width="52" height="40" rx="4" fill="#FFFFFF" opacity="0.38" transform="rotate(-15 48 48)"/>
+  <rect x="22" y="28" width="52" height="40" rx="4" fill="#FFFFFF" opacity="0.62" transform="rotate(-7.5 48 48)"/>
+  <rect x="22" y="28" width="52" height="40" rx="4" fill="#FFFFFF"/>
+  <!-- Foot band, deliberately the same construction as ClickTo: PDF's — full frame width,
+       flush to the frame's own bottom corners, top edge squared off via the same two-rect
+       technique (rounded rect + square overlay). That shared silhouette is the family cue;
+       the hue and the knockout are what separate the two apps.
+       The band is 20 units of a 40-unit frame where the PDF mark's is 18 of 52. It is
+       proportionally taller on purpose: a knocked-out triangle needs interior room the PDF
+       band never needed, and at 18 units the triangle stops resolving by 48px. At 20 it
+       holds to 32px. Below that the triangle is gone in every version tried, and the two
+       apps separate on tile hue and on landscape-vs-portrait silhouette instead — which is
+       also why these frames are 52x40 rather than the PDF mark's 40x52.
+       Keep this file in lockstep with generate-icons.py's render_master(), corner for
+       corner, so it stays the true preview of what ships rather than a second, drifting
+       implementation of the same mark. -->
+  <rect x="22" y="48" width="52" height="20" rx="4" fill="#F2A03D"/>
+  <rect x="22" y="48" width="52" height="6" fill="#F2A03D"/>
+  <polygon points="42,50 42,66 55,58" fill="#FFFFFF"/>
+</svg>

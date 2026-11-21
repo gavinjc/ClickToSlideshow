@@ -1,0 +1,90 @@
+<Window
+    x:Class="ClickToSlideshow.App.PlayerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid
+        x:Name="RootGrid"
+        Background="Black"
+        IsTabStop="True"
+        SizeChanged="RootGrid_SizeChanged"
+        KeyDown="RootGrid_KeyDown"
+        PointerMoved="RootGrid_PointerMoved">
+
+        <!-- Win2D's own CanvasAnimatedControl/CanvasControl XAML controls
+             (Microsoft.Graphics.Canvas.UI.Xaml) turned out not to be usable in this unpackaged
+             WinUI3 app — confirmed empirically, not assumed: the types exist in the package's
+             metadata but neither the C# nor XAML compiler can resolve them outside UWP with this
+             Win2D version. Falls back to the plan's documented alternative: render into an
+             offscreen CanvasRenderTarget (the same Win2D surface type Mp4VideoRenderer already
+             uses successfully) and present each frame as a WriteableBitmap. See
+             PlayerWindow.xaml.cs's render-loop comment for the mechanism and its known
+             performance caveat. -->
+        <Image x:Name="PlayerImage" Stretch="Fill"/>
+
+        <!-- Auto-hides after 3s idle (spec §4.7) — toggled directly in code-behind, not bound:
+             pure view state, nothing PlayerViewModel needs to know about. -->
+        <StackPanel
+            x:Name="ChromeOverlay"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Stretch"
+            Background="#99000000"
+            Padding="24,16"
+            Spacing="10">
+
+            <ProgressBar
+                Minimum="0" Maximum="1"
+                Value="{x:Bind ViewModel.Progress, Mode=OneWay}"
+                Foreground="White"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="24">
+                    <Button
+                        x:Uid="PlayerPreviousButton"
+                        Style="{StaticResource IconButtonStyle}"
+                        Click="PreviousButton_Click">
+                        <FontIcon Glyph="&#xE892;" FontSize="20" Foreground="White"/>
+                    </Button>
+
+                    <Button
+                        x:Name="PlayPauseButton"
+                        x:Uid="PlayerPlayPauseButton"
+                        Style="{StaticResource IconButtonStyle}"
+                        Click="PlayPauseButton_Click">
+                        <FontIcon x:Name="PlayPauseIcon" Glyph="&#xE768;" FontSize="24" Foreground="White"/>
+                    </Button>
+
+                    <Button
+                        x:Uid="PlayerNextButton"
+                        Style="{StaticResource IconButtonStyle}"
+                        Click="NextButton_Click">
+                        <FontIcon Glyph="&#xE893;" FontSize="20" Foreground="White"/>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel
+                    Grid.Column="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Spacing="8">
+                    <FontIcon Glyph="&#xE995;" FontSize="16" Foreground="White"/>
+                    <Slider
+                        x:Uid="PlayerVolumeSlider"
+                        Width="120"
+                        Minimum="0"
+                        Maximum="1"
+                        StepFrequency="0.05"
+                        Value="{x:Bind ViewModel.Volume, Mode=TwoWay}"
+                        Foreground="White"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

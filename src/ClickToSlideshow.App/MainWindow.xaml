@@ -1,0 +1,995 @@
+<Window
+    x:Class="ClickToSlideshow.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:ClickToSlideshow.App.ViewModels"
+    xmlns:converters="using:ClickToSlideshow.App.Converters"
+    xmlns:about="using:Bureau.Common.About"
+    xmlns:help="using:Bureau.Common.Help"
+    xmlns:messages="using:Bureau.Common.Messages">
+
+    <Grid x:Name="RootGrid" Background="{ThemeResource AppCanvasBackgroundBrush}">
+        <Grid.Resources>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <converters:SlideCountConverter x:Key="SlideCount"/>
+            <converters:DurationBadgeConverter x:Key="DurationBadge"/>
+            <converters:TransitionGlyphConverter x:Key="TransitionGlyph"/>
+            <converters:PlayPauseGlyphConverter x:Key="PlayPauseGlyph"/>
+            <converters:PlaybackProgressToIndicatorMarginConverter x:Key="PlaybackProgressToIndicatorMargin"/>
+            <Style x:Key="BackgroundColorSwatchButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="22"/>
+                <Setter Property="Height" Value="22"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="CornerRadius" Value="11"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource AppPanelBorderBrush}"/>
+            </Style>
+        </Grid.Resources>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Toolbar -->
+            <Grid Grid.Row="0" Padding="12,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <TextBlock x:Uid="ZoomLabel" VerticalAlignment="Center"/>
+                    <Slider x:Name="ZoomSlider" Minimum="120" Maximum="400" Value="200" Width="200"/>
+                    <!-- Every control that changes the show or its output binds IsEnabled to
+                         CanEdit, which is false while a video or PowerPoint saves (MainViewModel.IsSaving).
+                         Controls inside the item templates reach it through RootGrid's DataContext. -->
+                    <Button
+                        x:Uid="OpenButton"
+                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                        Click="OpenButton_Click"
+                        Background="{ThemeResource AppToolbarButtonBackgroundBrush}"
+                        BorderBrush="{ThemeResource AppToolbarButtonBorderBrush}"/>
+                    <Button
+                        x:Uid="UndoButton"
+                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                        Click="UndoButton_Click"
+                        Background="{ThemeResource AppToolbarButtonBackgroundBrush}"
+                        BorderBrush="{ThemeResource AppToolbarButtonBorderBrush}"/>
+                    <SplitButton
+                        x:Uid="SortButton"
+                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                        Click="SortButton_Click"
+                        Background="{ThemeResource AppToolbarButtonBackgroundBrush}"
+                        BorderBrush="{ThemeResource AppToolbarButtonBorderBrush}">
+                        <SplitButton.Flyout>
+                            <MenuFlyout Placement="Bottom">
+                                <MenuFlyoutItem x:Uid="SortByNameItem" Click="SortByName_Click"/>
+                                <MenuFlyoutItem x:Uid="SortByDateTakenItem" Click="SortByDateTaken_Click"/>
+                                <MenuFlyoutItem x:Uid="SortByDateModifiedItem" Click="SortByDateModified_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem x:Uid="ReverseOrderItem" Click="ReverseOrder_Click"/>
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="{Binding Slides.Count, Converter={StaticResource SlideCount}}"/>
+
+                    <!-- Primary actions (spec §4.3). IsEnabled follows only CanEdit: the
+                         empty-project no-op is handled in each click handler itself, because
+                         x:Bind + Converter doesn't compile when the code-behind root is a Window
+                         (not FrameworkElement), a WinUI-desktop limitation confirmed in the
+                         sibling ClickToPDF app; the Visibility bindings below use {Binding} for the
+                         same reason. -->
+                    <Button
+                        x:Uid="PlayButton"
+                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                        Click="PlayButton_Click"
+                        Style="{StaticResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE768;" FontSize="14"/>
+                            <TextBlock x:Uid="PlayButtonText"/>
+                        </StackPanel>
+                    </Button>
+                    <SplitButton
+                        x:Uid="SaveButton"
+                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                        Click="SaveButton_Click"
+                        Background="{ThemeResource AppToolbarButtonBackgroundBrush}"
+                        BorderBrush="{ThemeResource AppToolbarButtonBorderBrush}">
+                        <SplitButton.Flyout>
+                            <MenuFlyout Placement="Bottom">
+                                <MenuFlyoutItem x:Uid="SaveVideoItem" Click="SaveVideo_Click"/>
+                                <MenuFlyoutItem x:Uid="SavePptxItem" Click="SavePptx_Click"/>
+                                <MenuFlyoutItem x:Uid="SaveProjectItem" Click="SaveProjectJson_Click"/>
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                    <help:HelpButton Click="HelpButton_Click"/>
+                    <Button
+                        x:Uid="AboutButton"
+                        Style="{StaticResource IconButtonStyle}"
+                        Click="AboutButton_Click">
+                        <FontIcon Glyph="&#xE946;" FontSize="16"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Hand-rolled instead of Expander — see ClickToPDF.App's MainWindow.xaml for the
+                 original ExpanderHeaderBackground/ExpanderContentBackground theme-key rationale;
+                 ported unchanged since it's the same WindowsAppSDK version. -->
+            <StackPanel Grid.Row="1" Margin="12,0,12,8">
+                <Button
+                    x:Name="OptionsHeaderButton"
+                    Click="OptionsHeaderButton_Click"
+                    Background="{ThemeResource AppPanelBackgroundBrush}"
+                    BorderBrush="{ThemeResource AppPanelBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4,4,0,0"
+                    Padding="12,10"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="OptionsHeaderText" VerticalAlignment="Center"/>
+                        <FontIcon x:Name="OptionsHeaderChevron" Grid.Column="1" Glyph="&#xE70D;" FontSize="12" VerticalAlignment="Center"/>
+                    </Grid>
+                </Button>
+                <Border
+                    x:Name="OptionsBody"
+                    Background="{ThemeResource AppPanelBackgroundBrush}"
+                    BorderBrush="{ThemeResource AppPanelBorderBrush}"
+                    BorderThickness="1,0,1,1"
+                    CornerRadius="0,0,4,4"
+                    Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal" Spacing="16" Padding="8">
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="DefaultDurationLabel"/>
+                            <NumberBox
+                                x:Name="DefaultSlideMsNumberBox"
+                                IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                Value="{x:Bind ViewModel.DefaultSlideMs, Mode=OneWay}"
+                                ValueChanged="DefaultSlideMsNumberBox_ValueChanged"
+                                Minimum="100"
+                                SmallChange="500"
+                                SpinButtonPlacementMode="Inline"
+                                Width="180"/>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="TransitionKindLabel"/>
+                            <ComboBox x:Name="TransitionKindCombo" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" SelectedIndex="0" SelectionChanged="TransitionKindCombo_SelectionChanged">
+                                <ComboBoxItem x:Uid="TransitionCrossfadeItem" Tag="Crossfade"/>
+                                <ComboBoxItem x:Uid="TransitionCutItem" Tag="Cut"/>
+                                <ComboBoxItem x:Uid="TransitionFadeThroughBlackItem" Tag="FadeThroughBlack"/>
+                                <ComboBoxItem x:Uid="TransitionPushLeftItem" Tag="PushLeft"/>
+                                <ComboBoxItem x:Uid="TransitionPushRightItem" Tag="PushRight"/>
+                                <ComboBoxItem x:Uid="TransitionPushUpItem" Tag="PushUp"/>
+                                <ComboBoxItem x:Uid="TransitionPushDownItem" Tag="PushDown"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="TransitionDurationLabel"/>
+                            <NumberBox
+                                x:Name="TransitionMsNumberBox"
+                                IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                Value="{x:Bind ViewModel.TransitionMs, Mode=OneWay}"
+                                ValueChanged="TransitionMsNumberBox_ValueChanged"
+                                Minimum="0"
+                                SmallChange="500"
+                                SpinButtonPlacementMode="Inline"
+                                Width="180"/>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="ResolutionLabel"/>
+                            <ComboBox x:Name="ResolutionCombo" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" SelectedIndex="0" SelectionChanged="ResolutionCombo_SelectionChanged">
+                                <ComboBoxItem x:Uid="Resolution1080pItem" Tag="HD1080p"/>
+                                <ComboBoxItem x:Uid="Resolution2160pItem" Tag="UHD2160p"/>
+                                <ComboBoxItem x:Uid="ResolutionOriginalItem" Tag="Original"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="FitModeLabel"/>
+                            <ComboBox x:Name="FitModeCombo" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" SelectedIndex="0" SelectionChanged="FitModeCombo_SelectionChanged">
+                                <ComboBoxItem x:Uid="FitModeFitItem" Tag="Fit"/>
+                                <ComboBoxItem x:Uid="FitModeFillItem" Tag="Fill"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <!-- The swatches' selection ring can't show a colour picked from the custom
+                             ColorPicker (it matches none of the ten), so this preview is the one
+                             place the active colour is always visible. -->
+                        <Ellipse
+                            x:Name="CurrentBackgroundColorPreview"
+                            Width="44"
+                            Height="44"
+                            VerticalAlignment="Center"
+                            Stroke="{ThemeResource AppPanelBorderBrush}"
+                            StrokeThickness="1">
+                            <Ellipse.Fill>
+                                <SolidColorBrush Color="{x:Bind ViewModel.BackgroundColor, Mode=OneWay}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <StackPanel Spacing="4">
+                            <TextBlock x:Uid="BackgroundColorLabel"/>
+                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                <Button x:Uid="BackgroundColorSwatchBlack" Tag="#FF000000" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchWhite" Tag="#FFFFFFFF" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchGray" Tag="#FF808080" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchRed" Tag="#FFE81123" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchOrange" Tag="#FFF7630C" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchYellow" Tag="#FFFFD400" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchGreen" Tag="#FF107C10" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchTeal" Tag="#FF00B7C3" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchBlue" Tag="#FF0078D4" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="BackgroundColorSwatchPurple" Tag="#FF881798" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Loaded="BackgroundColorSwatch_Loaded" Click="BackgroundColorSwatch_Click" Style="{StaticResource BackgroundColorSwatchButtonStyle}"/>
+                                <Button x:Uid="MoreColorsButton" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" Background="Transparent" Style="{StaticResource BackgroundColorSwatchButtonStyle}">
+                                    <FontIcon Glyph="&#xE712;" FontSize="12"/>
+                                    <Button.Flyout>
+                                        <Flyout Placement="Bottom">
+                                            <ColorPicker
+                                                ColorSpectrumShape="Ring"
+                                                IsMoreButtonVisible="False"
+                                                IsColorSliderVisible="False"
+                                                IsColorChannelTextInputVisible="False"
+                                                IsHexInputVisible="False"
+                                                IsAlphaEnabled="False"
+                                                Color="{x:Bind ViewModel.BackgroundColor, Mode=TwoWay}"/>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Slides + Audio, both top-aligned and stacked in one scrollable region
+                 (audio-section-brief.md §3.9) — a plain Grid.Row="*" cell previously stretched the
+                 slide grid to fill all remaining height regardless of item count, leaving a large
+                 void above the audio section whenever there were only a few slides. Both
+                 ListViewBase controls disable their own scrollbar and defer to this outer
+                 ScrollViewer, which still virtualizes them correctly via WinUI's nested-viewport
+                 support (EffectiveViewportChanged) rather than losing virtualization outright —
+                 this matters at the 300-photo scale spec §5 calls out.
+                 AllowDrop takes files and folders from File Explorer anywhere over this row; the
+                 handlers are attached in code (MainWindow.xaml.cs) so they also see drags the
+                 slide grid and audio list have already handled. The transparent background makes
+                 the empty space below the lists a drop target too. -->
+            <Grid x:Name="ContentGrid" Grid.Row="2" AllowDrop="True" Background="Transparent">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <!-- Slides section header (brief §3.1) -->
+                        <Grid Margin="12,8,12,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                x:Uid="SlidesHeaderLabel"
+                                Grid.Column="0"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                VerticalAlignment="Center"/>
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{x:Bind ViewModel.SlidesHeaderSummaryText, Mode=OneWay}"
+                                Margin="8,0,0,0"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                VerticalAlignment="Center"/>
+                            <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource AppPanelBorderBrush}" Margin="12,0" VerticalAlignment="Center"/>
+                            <Button
+                                x:Uid="AddSlidesButton"
+                                IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                Grid.Column="3"
+                                Click="AddImagesButton_Click"
+                                Style="{StaticResource AddSectionButtonStyle}">
+                                <FontIcon Glyph="&#xE710;" FontSize="14"/>
+                            </Button>
+                        </Grid>
+
+                        <Grid Margin="12,0,12,8" MinHeight="260">
+                            <!-- Empty state -->
+                            <StackPanel
+                                x:Name="EmptyStatePanel"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12"
+                                Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibility}}">
+                                <FontIcon Glyph="&#xE8B9;" FontSize="48" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock x:Uid="EmptyStateText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <Button
+                                        x:Uid="ChooseFilesButton"
+                                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                        Click="ChooseFilesButton_Click"
+                                        Style="{StaticResource AccentButtonStyle}"/>
+                                    <Button
+                                        x:Uid="ChooseFolderButton"
+                                        IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                        Click="ChooseFolderButton_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <!-- Slide grid -->
+                            <GridView
+                                x:Name="SlidesGridView"
+                                VerticalAlignment="Top"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                ScrollViewer.VerticalScrollMode="Disabled"
+                                ItemsSource="{x:Bind ViewModel.Slides}"
+                                CanReorderItems="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                AllowDrop="True"
+                                CanDragItems="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                SelectionMode="Extended"
+                                IsItemClickEnabled="False"
+                                Visibility="{Binding ShowEmptyState, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}"
+                                SelectionChanged="SlidesGridView_SelectionChanged"
+                                DragItemsStarting="SlidesGridView_DragItemsStarting"
+                                DragItemsCompleted="SlidesGridView_DragItemsCompleted">
+                <GridView.Resources>
+                    <!-- GridViewItem's default template paints PointerOver/Pressed/Selected chrome
+                         above the item's own content, washing out the always-visible corner
+                         buttons on hover — replaced with a plain ContentPresenter (no built-in
+                         hover/pressed/selection visuals). Selection highlight is drawn manually in
+                         the DataTemplate below via SlideItem.IsSelected, since a container-level
+                         VisualState can't reach into the ContentPresenter's own templated content.
+                         The FocusStates group restores the keyboard focus rect the container
+                         template swap also removed. -->
+                    <Style x:Key="TileContainerStyle" TargetType="GridViewItem">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="GridViewItem">
+                                    <Grid>
+                                        <ContentPresenter
+                                            Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                        <Border
+                                            x:Name="FocusVisual"
+                                            BorderBrush="{ThemeResource SystemControlFocusVisualPrimaryBrush}"
+                                            BorderThickness="2"
+                                            CornerRadius="4"
+                                            IsHitTestVisible="False"
+                                            Opacity="0"/>
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="FocusStates">
+                                                <VisualState x:Name="Focused">
+                                                    <VisualState.Setters>
+                                                        <Setter Target="FocusVisual.Opacity" Value="1"/>
+                                                    </VisualState.Setters>
+                                                </VisualState>
+                                                <VisualState x:Name="Unfocused"/>
+                                                <VisualState x:Name="PointerFocused"/>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </GridView.Resources>
+                <GridView.ItemContainerStyle>
+                    <StaticResource ResourceKey="TileContainerStyle"/>
+                </GridView.ItemContainerStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SlideItem">
+                        <Grid
+                            Tag="{x:Bind}"
+                            Width="{Binding ElementName=ZoomSlider, Path=Value}"
+                            Height="{Binding ElementName=ZoomSlider, Path=Value}"
+                            Margin="4"
+                            DoubleTapped="Tile_DoubleTapped"
+                            PointerEntered="Tile_PointerEntered"
+                            PointerExited="Tile_PointerExited">
+
+                            <Border
+                                Background="{ThemeResource AppTileBackgroundBrush}"
+                                BorderBrush="{ThemeResource AppTileBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Grid Grid.Row="0">
+                                        <Border BorderBrush="{ThemeResource AppThumbnailEdgeBrush}" BorderThickness="1">
+                                            <Image
+                                                Source="{x:Bind ThumbnailSource, Mode=OneWay}"
+                                                Stretch="Uniform"
+                                                RenderTransformOrigin="0.5,0.5">
+                                                <Image.RenderTransform>
+                                                    <RotateTransform Angle="{x:Bind RotationDegrees, Mode=OneWay}"/>
+                                                </Image.RenderTransform>
+                                            </Image>
+                                        </Border>
+
+                                        <!-- Plain text, not ProgressRing: ProgressRing.IsActive crashed
+                                             natively inside a virtualized GridView item template in
+                                             the sibling ClickToPDF app — same WindowsAppSDK version. -->
+                                        <TextBlock
+                                            x:Uid="LoadingText"
+                                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                        <Button
+                                            Style="{StaticResource IconButtonStyle}"
+                                            Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"
+                                            ToolTipService.ToolTip="{Binding ErrorDetail}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <StackPanel Spacing="4">
+                                                <FontIcon Glyph="&#xE783;" FontSize="24"
+                                                          Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                                <TextBlock x:Uid="CantLoadText" FontSize="11" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <Button.Flyout>
+                                                <Flyout>
+                                                    <StackPanel Spacing="8" MaxWidth="260">
+                                                        <TextBlock Text="{Binding ErrorDetail}" TextWrapping="Wrap"/>
+                                                        <HyperlinkButton
+                                                            x:Uid="CodecMissingLinkButton"
+                                                            NavigateUri="{Binding ErrorStoreLinkUri}"
+                                                            Visibility="{Binding ErrorStoreLinkUri, Converter={StaticResource BoolToVisibility}}"/>
+                                                    </StackPanel>
+                                                </Flyout>
+                                            </Button.Flyout>
+                                        </Button>
+
+                                        <!-- Slide number, plus the leading-edge transition glyph (spec §4.3)
+                                             alongside it when this slide overrides the project's default
+                                             transition — combined into one top-left badge rather than two
+                                             stacked ones, since the bottom-left corner is already fully
+                                             owned by Grid.Row="1"'s filename pill below. -->
+                                        <StackPanel
+                                            Orientation="Horizontal" Spacing="4"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6">
+                                            <Border
+                                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                CornerRadius="10" Padding="8,2">
+                                                <TextBlock Text="{x:Bind SlideNumber, Mode=OneWay}"
+                                                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" FontSize="12"/>
+                                            </Border>
+                                            <Border
+                                                Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                                                CornerRadius="10" Padding="6,2"
+                                                Visibility="{Binding TransitionIn, Converter={StaticResource BoolToVisibility}}">
+                                                <TextBlock
+                                                    Text="{Binding TransitionIn, Converter={StaticResource TransitionGlyph}}"
+                                                    Foreground="{ThemeResource TextFillColorPrimaryBrush}" FontSize="12"/>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <!-- Duration badge (spec §4.3) -->
+                                        <Border
+                                            Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                                            CornerRadius="10" Padding="6,2" Margin="6"
+                                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Visibility="{Binding DurationMs, Converter={StaticResource BoolToVisibility}}">
+                                            <TextBlock
+                                                Text="{Binding DurationMs, Converter={StaticResource DurationBadge}}"
+                                                Foreground="{ThemeResource TextFillColorPrimaryBrush}" FontSize="12"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <Grid Grid.Row="1" Padding="4,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border
+                                            Grid.Column="0"
+                                            Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                                            CornerRadius="4" Padding="6,2" Margin="0,0,4,0">
+                                            <TextBlock
+                                                Text="{x:Bind FileName}"
+                                                ToolTipService.ToolTip="{x:Bind FileName}"
+                                                Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                                                FontSize="11"
+                                                TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                                        </Border>
+
+                                        <!-- One pill, not four separate chips — see ClickToPDF.App's
+                                             MainWindow.xaml for the rationale; ported unchanged.
+                                             Tile_PointerEntered/Exited raise this pill's Opacity on
+                                             hover rather than toggling Visibility. -->
+                                        <Border
+                                            x:Name="ChromePill"
+                                            Grid.Column="1"
+                                            Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                                            CornerRadius="12"
+                                            Padding="2"
+                                            Opacity="0.55">
+                                            <StackPanel Orientation="Horizontal" Spacing="0">
+                                                <Button x:Uid="PreviewSlideButton" Style="{StaticResource IconButtonStyle}" Tag="{x:Bind}" Click="PreviewButton_Click">
+                                                    <FontIcon Glyph="&#xE71E;" FontSize="14" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                                </Button>
+                                                <Button x:Uid="TileRotateButton" IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.CanEdit}" Style="{StaticResource IconButtonStyle}" Tag="{x:Bind}" Click="RotateButton_Click">
+                                                    <FontIcon Glyph="&#xE7AD;" FontSize="14" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                                </Button>
+                                                <Button x:Uid="TileSetDurationButton" IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.CanEdit}" Style="{StaticResource IconButtonStyle}">
+                                                    <FontIcon Glyph="&#xE916;" FontSize="14" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                                    <Button.Flyout>
+                                                        <Flyout>
+                                                            <NumberBox
+                                                                x:Uid="DurationNumberBox"
+                                                                Tag="{x:Bind}"
+                                                                Minimum="0"
+                                                                SmallChange="500"
+                                                                SpinButtonPlacementMode="Inline"
+                                                                Value="{x:Bind DurationMsOrZero, Mode=OneWay}"
+                                                                ValueChanged="DurationNumberBox_ValueChanged"
+                                                                Width="180"/>
+                                                        </Flyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                                <!-- Each item carries the tile's SlideItem in Tag and the
+                                                     TransitionKind name in CommandParameter (no Command is
+                                                     set — it's just a spare slot on MenuFlyoutItem, since a
+                                                     flyout in a DataTemplate can't reach the tile's
+                                                     DataContext). No CommandParameter = project default. -->
+                                                <Button x:Uid="TileSetTransitionButton" IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.CanEdit}" Style="{StaticResource IconButtonStyle}">
+                                                    <FontIcon Glyph="&#xE8AB;" FontSize="14" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                                    <Button.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionDefaultItem" Tag="{x:Bind}" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutSeparator/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionCrossfadeItem" Tag="{x:Bind}" CommandParameter="Crossfade" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionCutItem" Tag="{x:Bind}" CommandParameter="Cut" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionFadeThroughBlackItem" Tag="{x:Bind}" CommandParameter="FadeThroughBlack" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionPushLeftItem" Tag="{x:Bind}" CommandParameter="PushLeft" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionPushRightItem" Tag="{x:Bind}" CommandParameter="PushRight" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionPushUpItem" Tag="{x:Bind}" CommandParameter="PushUp" Click="TileTransition_Click"/>
+                                                            <MenuFlyoutItem x:Uid="TileTransitionPushDownItem" Tag="{x:Bind}" CommandParameter="PushDown" Click="TileTransition_Click"/>
+                                                        </MenuFlyout>
+                                                    </Button.Flyout>
+                                                </Button>
+                                                <Button x:Uid="TileRemoveButton" IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.CanEdit}" Style="{StaticResource IconButtonStyle}" Tag="{x:Bind}" Click="RemoveButton_Click">
+                                                    <FontIcon Glyph="&#xE711;" FontSize="14" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <!-- Selection highlight: SlideItem.IsSelected mirrors GridView.SelectedItems
+                                 (kept authoritative) via MainWindow's SelectionChanged handler. -->
+                            <Border
+                                Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                Opacity="0.12"
+                                CornerRadius="4"
+                                IsHitTestVisible="False"/>
+                            <Border
+                                Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}"
+                                BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                                BorderThickness="2"
+                                CornerRadius="4"
+                                IsHitTestVisible="False"/>
+                        </Grid>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+                        </Grid>
+
+                        <!-- Audio section header (brief §3.1) -->
+                        <Grid Margin="12,16,12,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                x:Uid="AudioHeaderLabel"
+                                Grid.Column="0"
+                                FontWeight="SemiBold"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                VerticalAlignment="Center"/>
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="{x:Bind ViewModel.AudioHeaderSummaryText, Mode=OneWay}"
+                                Margin="8,0,0,0"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                VerticalAlignment="Center"/>
+                            <Rectangle Grid.Column="2" Height="1" Fill="{ThemeResource AppPanelBorderBrush}" Margin="12,0" VerticalAlignment="Center"/>
+                            <Button
+                                x:Uid="AddAudioButton"
+                                IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                Grid.Column="3"
+                                Click="AddAudioButton_Click"
+                                Style="{StaticResource AddSectionButtonStyle}">
+                                <FontIcon Glyph="&#xE710;" FontSize="14"/>
+                            </Button>
+                        </Grid>
+
+                        <Grid Margin="12,0,12,8">
+                            <TextBlock
+                                x:Uid="EmptyAudioStateText"
+                                HorizontalAlignment="Left"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                Visibility="{Binding ShowEmptyAudioState, Converter={StaticResource BoolToVisibility}}"/>
+
+                            <!-- Audio cards (brief §3.2) — still a ListView, not a plain
+                                 ItemsControl, so CanReorderItems/AllowDrop (already implemented,
+                                 just previously undiscoverable behind a bare text row) keep
+                                 working unchanged. -->
+                            <ListView
+                                x:Name="AudioTracksListView"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                ScrollViewer.VerticalScrollMode="Disabled"
+                                ItemsSource="{x:Bind ViewModel.AudioTracks}"
+                                SelectionMode="None"
+                                CanReorderItems="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                                AllowDrop="True"
+                                Visibility="{Binding ShowEmptyAudioState, Converter={StaticResource BoolToVisibility}, ConverterParameter=Invert}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:AudioTrackItem">
+                                        <Border
+                                            Background="{ThemeResource AppTileBackgroundBrush}"
+                                            BorderBrush="{ThemeResource AppTileBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Height="62"
+                                            MaxWidth="900"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,0,0,8"
+                                            Padding="10,0">
+                                            <Grid ColumnSpacing="10">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="140"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <FontIcon
+                                                    Grid.Column="0"
+                                                    Glyph="&#xE76F;"
+                                                    FontSize="14"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    VerticalAlignment="Center"/>
+
+                                                <Border
+                                                    Grid.Column="1"
+                                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                    CornerRadius="10" Padding="8,2"
+                                                    VerticalAlignment="Center">
+                                                    <TextBlock
+                                                        Text="{x:Bind TrackNumber, Mode=OneWay}"
+                                                        Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                                        FontSize="12"/>
+                                                </Border>
+
+                                                <Button
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource IconButtonStyle}"
+                                                    Tag="{x:Bind}"
+                                                    Click="PlayPauseAudioButton_Click"
+                                                    VerticalAlignment="Center"
+                                                    AutomationProperties.Name="{x:Bind FileName}">
+                                                    <FontIcon Glyph="{Binding IsPlaying, Converter={StaticResource PlayPauseGlyph}}" FontSize="16"/>
+                                                </Button>
+
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    Text="{x:Bind FileName}"
+                                                    VerticalAlignment="Center"
+                                                    TextTrimming="CharacterEllipsis"/>
+
+                                                <!-- The waveform and position indicator are laid out at their natural width
+                                                     (AudioTrackItem.WaveformWidth) inside a Viewbox that scales them to the
+                                                     column, so the whole track is always visible and the indicator reaches the
+                                                     right edge exactly when the track ends. No DownOnly: the seek surface below
+                                                     spans the whole column, so the waveform must too. -->
+                                                <Viewbox
+                                                    Grid.Column="4"
+                                                    Stretch="Fill"
+                                                    Height="28"
+                                                    VerticalAlignment="Center">
+                                                    <Grid Width="{x:Bind vm:AudioTrackItem.WaveformWidth}" Height="28">
+                                                        <ItemsControl
+                                                            ItemsSource="{x:Bind WaveformBarHeights, Mode=OneWay}"
+                                                            VerticalAlignment="Center">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <StackPanel Orientation="Horizontal" Spacing="1"/>
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="x:Double">
+                                                                    <Rectangle
+                                                                        Width="2" Height="{x:Bind}"
+                                                                        RadiusX="1" RadiusY="1"
+                                                                        Fill="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                        VerticalAlignment="Center"/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+
+                                                        <Rectangle
+                                                            Width="2" Height="28"
+                                                            RadiusX="1" RadiusY="1"
+                                                            Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="{Binding PlaybackProgress, Converter={StaticResource PlaybackProgressToIndicatorMargin}}"
+                                                            Visibility="{Binding HasPlaybackPosition, Converter={StaticResource BoolToVisibility}}"/>
+                                                    </Grid>
+                                                </Viewbox>
+
+                                                <!-- Click/drag surface for seeking, spanning the same column as the waveform
+                                                     so pointer X / ActualWidth is the fraction the indicator draws. Taller
+                                                     than the bars to be easy to hit. -->
+                                                <Rectangle
+                                                    Grid.Column="4"
+                                                    Height="44"
+                                                    Fill="Transparent"
+                                                    Tag="{x:Bind}"
+                                                    PointerPressed="WaveformSeekSurface_PointerPressed"
+                                                    PointerMoved="WaveformSeekSurface_PointerMoved"
+                                                    PointerReleased="WaveformSeekSurface_PointerReleased"
+                                                    PointerCaptureLost="WaveformSeekSurface_PointerCaptureLost"/>
+
+                                                <TextBlock
+                                                    Grid.Column="5"
+                                                    Text="{x:Bind FormattedDuration}"
+                                                    Margin="8,0" VerticalAlignment="Center"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                                <Button
+                                                    Grid.Column="6"
+                                                    x:Uid="RemoveAudioTrackButton"
+                                                    IsEnabled="{Binding ElementName=RootGrid, Path=DataContext.CanEdit}"
+                                                    Style="{StaticResource IconButtonStyle}"
+                                                    Tag="{x:Bind}"
+                                                    Click="RemoveAudioTrackButton_Click"
+                                                    VerticalAlignment="Center">
+                                                    <FontIcon Glyph="&#xE711;" FontSize="14"/>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Floating, not row-based: an Auto row here would shift the grid content when a
+                     message or the save progress appears, and the user is looking at the grid
+                     when that happens. Anchored to this content Grid.Row, not the whole window, so
+                     it never overlaps the runtime footer pinned in the row below. -->
+                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="12,8" Spacing="8">
+            <StackPanel
+                x:Name="SaveProgressPanel"
+                Orientation="Horizontal"
+                Spacing="8"
+                Visibility="Collapsed"
+                Background="{ThemeResource AppPanelBackgroundBrush}"
+                BorderBrush="{ThemeResource AppPanelBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="12,8">
+                <TextBlock x:Name="SaveProgressText" MinWidth="170" VerticalAlignment="Center"/>
+                <!-- Hand-built to match the runtime footer's 8px bars: ProgressBar's template
+                     ignored both Height and overrides of its track-height theme resources. -->
+                <Grid x:Name="SaveProgressTrack" Width="240" VerticalAlignment="Center">
+                    <Rectangle Height="8" RadiusX="4" RadiusY="4" Fill="{ThemeResource AppControlBorderBrush}"/>
+                    <Rectangle x:Name="SaveProgressFill" Height="8" Width="0" RadiusX="4" RadiusY="4" Fill="{ThemeResource AccentFillColorDefaultBrush}" HorizontalAlignment="Left"/>
+                </Grid>
+                <Button x:Uid="CancelSaveButton" Click="CancelSaveButton_Click"/>
+            </StackPanel>
+
+            <!-- Every message (saved, skipped, errors) goes through the shared bar
+                 (Bureau.Common app-conventions.md → Message bar); MainWindow.xaml.cs forwards the
+                 view model's messages to it. -->
+            <messages:MessageBar x:Name="Messages"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Runtime footer (brief §3.6) — full width, spans the window, both bars share one
+                 axis scaled to max(runtime, audioLength) so the shorter one is visibly short.
+                 Bar widths/summary text are pre-computed on MainViewModel (see RecomputeRuntime)
+                 rather than derived here, same x:Bind-on-Window limitation noted above; the
+                 SizeChanged handler feeds this Grid's own measured width back into the view model
+                 (MainWindow.xaml.cs) so the bars stay proportional at any window size. -->
+            <Grid
+                Grid.Row="3"
+                Background="{ThemeResource AppPanelBackgroundBrush}"
+                BorderBrush="{ThemeResource AppPanelBorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="16,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="RuntimeBarLabel" Grid.Column="0" FontSize="12" VerticalAlignment="Center"/>
+                        <Grid x:Name="RuntimeBarTrack" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" SizeChanged="RuntimeBarTrack_SizeChanged">
+                            <Rectangle Height="8" HorizontalAlignment="Stretch" RadiusX="4" RadiusY="4" Fill="{ThemeResource AppControlBorderBrush}"/>
+                            <Rectangle Height="8" Width="{Binding RuntimeBarWidth}" RadiusX="4" RadiusY="4" Fill="{ThemeResource AccentFillColorDefaultBrush}" HorizontalAlignment="Left"/>
+                        </Grid>
+                        <TextBlock Grid.Column="2" Text="{Binding FormattedRuntimeText}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="70"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Uid="AudioBarLabel" Grid.Column="0" FontSize="12" VerticalAlignment="Center"/>
+                        <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <Rectangle Height="8" HorizontalAlignment="Stretch" RadiusX="4" RadiusY="4" Fill="{ThemeResource AppControlBorderBrush}"/>
+                            <Rectangle Height="8" Width="{Binding AudioBarWidth}" RadiusX="4" RadiusY="4" Fill="{ThemeResource AppAudioAccentBrush}" HorizontalAlignment="Left"/>
+                        </Grid>
+                        <TextBlock Grid.Column="2" Text="{Binding FormattedAudioLengthText}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center"/>
+                    </Grid>
+                    <TextBlock Text="{Binding RuntimeSummaryText}" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="78,2,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="4" Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock x:Uid="AudioMatchLabel" FontSize="11" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                    <ComboBox x:Name="AudioMatchCombo" IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}" SelectedIndex="0" SelectionChanged="AudioMatchCombo_SelectionChanged">
+                        <ComboBoxItem x:Uid="AudioMatchLoopItem" Tag="Loop"/>
+                        <ComboBoxItem x:Uid="AudioMatchTrimItem" Tag="Trim"/>
+                        <ComboBoxItem x:Uid="AudioMatchFitSlidesItem" Tag="FitSlides"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Grid
+            x:Name="PreviewOverlay"
+            Background="#CC000000"
+            Visibility="Collapsed"
+            Tapped="PreviewOverlay_Tapped">
+            <Image x:Name="PreviewImage" Stretch="Uniform" Margin="40" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <RotateTransform x:Name="PreviewImageRotation"/>
+                </Image.RenderTransform>
+            </Image>
+
+            <Button
+                x:Uid="PreviewCloseButton"
+                Style="{StaticResource IconButtonStyle}"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="16"
+                Click="PreviewCloseButton_Click"
+                Tapped="StopTappedPropagation">
+                <FontIcon Glyph="&#xE711;" FontSize="18" Foreground="White"/>
+            </Button>
+
+            <Button
+                x:Uid="PreviewRotateButton"
+                IsEnabled="{x:Bind ViewModel.CanEdit, Mode=OneWay}"
+                Style="{StaticResource IconButtonStyle}"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="24"
+                Click="PreviewRotateButton_Click"
+                Tapped="StopTappedPropagation">
+                <FontIcon Glyph="&#xE7AD;" FontSize="18" Foreground="White"/>
+            </Button>
+
+            <TextBlock
+                x:Name="PreviewIndicatorText"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,24"
+                Foreground="White" FontSize="14"/>
+        </Grid>
+
+        <!-- Shared Bureau.Common dialog: version, cross-promotion and diagnostics come from there;
+             ProductName, Description and LogDirectoryPath are set in code-behind. -->
+        <about:AboutDialog x:Name="AboutDialog">
+            <!-- MIT requires the copyright/permission notice be included with distributed copies of
+                 the software; the packages below all ship compiled into this app (or its shell
+                 extension). Win2D's own nuspec licenseUrl is a dead 2014 WebPI EULA link (stale
+                 metadata predating NuGet's SPDX `license` field) — confirmed MIT via the project's
+                 actual LICENSE.txt at github.com/microsoft/Win2D before listing it here as MIT
+                 rather than skipping it. -->
+            <about:AboutDialog.ThirdPartyNotices>
+                <StackPanel Spacing="12">
+                    <TextBlock TextWrapping="Wrap" FontSize="12">
+                        Win2D — Copyright (c) Microsoft Corporation. All rights reserved.
+                        <LineBreak/>
+                        DocumentFormat.OpenXml — Copyright © Microsoft Corporation. All rights reserved.
+                        <LineBreak/>
+                        CommunityToolkit.Mvvm — Copyright © .NET Foundation and Contributors
+                        <LineBreak/>
+                        Microsoft.Windows.ImplementationLibrary (WIL) — Copyright (c) Microsoft Corporation. All rights reserved.
+                        <LineBreak/>
+                        NVorbis — Copyright (c) 2020 Andrew Ward
+                        <LineBreak/>
+                        Concentus.OggFile — Copyright (c) 2020 Andrew Ward and Logan Stromberg
+                        <LineBreak/>
+                        Concentus (Opus) — see the BSD licence below
+                    </TextBlock>
+
+                    <TextBlock Text="Each, except Concentus, is licensed under the MIT License:" FontSize="12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        Permission is hereby granted, free of charge, to any person obtaining a copy of this
+                        software and associated documentation files (the "Software"), to deal in the Software
+                        without restriction, including without limitation the rights to use, copy, modify,
+                        merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+                        permit persons to whom the Software is furnished to do so, subject to the following
+                        conditions:
+                        <LineBreak/><LineBreak/>
+                        The above copyright notice and this permission notice shall be included in all
+                        copies or substantial portions of the Software.
+                        <LineBreak/><LineBreak/>
+                        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+                        INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+                        PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+                        HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+                        CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+                        OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                    </TextBlock>
+
+                    <TextBlock Text="Concentus is licensed under the following terms:" FontSize="12"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        Copyright (c) by various holding parties, including (but not limited to): Skype
+                        Limited, Xiph.Org Foundation, CSIRO, Microsoft Corporation, Jean-Marc Valin, Gregory
+                        Maxwell, Mark Borgerding, Timothy B. Terriberry, Logan Stromberg. All rights are
+                        reserved by their respective holders.
+                        <LineBreak/><LineBreak/>
+                        Redistribution and use in source and binary forms, with or without modification, are
+                        permitted provided that the following conditions are met:
+                        <LineBreak/><LineBreak/>
+                        * Redistributions of source code must retain the above copyright notice, this list of
+                        conditions and the following disclaimer.
+                        <LineBreak/><LineBreak/>
+                        * Redistributions in binary form must reproduce the above copyright notice, this list
+                        of conditions and the following disclaimer in the documentation and/or other
+                        materials provided with the distribution.
+                        <LineBreak/><LineBreak/>
+                        * Neither the name of Internet Society, IETF or IETF Trust, nor the names of specific
+                        contributors, may be used to endorse or promote products derived from this software
+                        without specific prior written permission.
+                        <LineBreak/><LineBreak/>
+                        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+                        EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+                        OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+                        SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+                        INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+                        TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+                        BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+                        CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+                        WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+                        DAMAGE.
+                    </TextBlock>
+                </StackPanel>
+            </about:AboutDialog.ThirdPartyNotices>
+        </about:AboutDialog>
+
+        <!-- Confirms before Open replaces whatever is already loaded (spec's own flagged gap —
+             see OpenButton_Click). Gated on "is there anything to lose", not exact dirty-tracking:
+             several edit paths (e.g. a tile's duration NumberBox) don't go through the undo stack,
+             so tracking real dirty state precisely would risk missing one and silently not warning
+             — the coarser check can only ever over-warn, never under-warn. DefaultButton is the
+             Cancel side so pressing Enter can't discard by accident. -->
+        <ContentDialog
+            x:Name="DiscardChangesDialog"
+            x:Uid="DiscardChangesDialog"
+            DefaultButton="Close"/>
+    </Grid>
+</Window>

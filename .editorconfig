@@ -1,0 +1,23 @@
+root = true
+
+[*]
+indent_style = space
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+indent_size = 4
+dotnet_diagnostic.CA1502.severity = warning   # excessive cyclomatic complexity
+dotnet_diagnostic.CA1505.severity = warning   # unmaintainable code
+dotnet_diagnostic.CA1506.severity = warning   # excessive class coupling
+dotnet_diagnostic.CA1031.severity = warning   # catching general exception types
+
+dotnet_diagnostic.S3776.severity = warning    # cognitive complexity
+dotnet_diagnostic.S4144.severity = warning    # methods with identical implementations
+dotnet_diagnostic.S1172.severity = warning    # unused parameters
+dotnet_diagnostic.S1481.severity = warning    # unused local variables
+dotnet_diagnostic.S107.severity  = warning    # too many parameters
+
+[*.{cpp,h,hpp}]
+indent_size = 4

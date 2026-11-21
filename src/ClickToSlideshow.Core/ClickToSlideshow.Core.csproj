@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Pinned explicitly, matching spec §3.2 / ClickToPDF's own version: Win2D 1.2.0's own
+         nuspec transitively pulls WindowsAppSDK 1.5.240227000, whose MrtCore.PriGen.targets
+         defaults RuntimeIdentifiers to legacy "win10-*" names the .NET 8 SDK's RID graph no
+         longer recognizes (NETSDK1083). 2.3.1 doesn't carry that default. -->
+    <PackageReference Include="Concentus.Oggfile" Version="1.0.7" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.2.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+  </ItemGroup>
+
+</Project>

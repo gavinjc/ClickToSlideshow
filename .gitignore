@@ -1,0 +1,29 @@
+# Build outputs
+bin/
+obj/
+x64/
+x86/
+ARM64/
+AppPackages/
+BundleArtifacts/
+*.appx
+*.msix
+*.appxsym
+*.msixsym
+
+# Per-dev-machine signing cert — never shared/committed
+*.pfx
+
+# IDE
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python (tools/generate-icons.py)
+__pycache__/
+*.pyc
